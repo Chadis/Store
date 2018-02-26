@@ -1,0 +1,84 @@
+﻿@model IEnumerable<The_Store.PRODUCT>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h1>Welcome to Da Corner Store</h1>
+
+<p>
+    <a role="button" class="btn btn-primary" href="/Admin/Create">Add New Products</a>
+
+    @using (Html.BeginForm("Index", "Admin", FormMethod.Get))
+    {
+        <p> @Html.TextBox("searchString") <input type="submit" value="Search" /> </p>
+    }
+</p>
+
+
+    <table class="table">
+        <tr style="font-size:medium;">
+            <th>
+                Product
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Specification
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Handling Charge
+            </th>
+            <th>
+                Shipping Details
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                Feature Picture
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.item)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.specification)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.handling_charge)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.shipping_details)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.feature_picture)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id }) |
+                    @Html.ActionLink("Add a Pic", "AddPictures", new { id = item.Id})
+                </td>
+            </tr>
+        }
+
+    </table>

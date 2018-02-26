@@ -1,0 +1,100 @@
+﻿@model The_Store.PRODUCT
+
+@{
+    ViewBag.Title = "AddPictures";
+}
+
+<h2>AddPictures</h2>
+
+<div>
+    <h4>PRODUCT</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.item)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.item)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.specification)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.specification)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.handling_charge)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.handling_charge)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.shipping_details)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.shipping_details)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.quantity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.quantity)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.feature_picture)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.feature_picture)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+@{
+    foreach (IMAGE pic in ViewBag.pictures)
+    {
+        <div>
+            <img src="/Images/@pic.path" />
+            <p>@pic.description</p>
+            <a href="Profile/deletePictures/@pic.Id">Delete</a>
+        </div>
+    }
+}
+
+@using (Html.BeginForm("AddPictures", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="file" />
+    <input type="text" name="Description" />
+    <input type="submit" name="Submit" id="Submit" value="Upload" />
+}

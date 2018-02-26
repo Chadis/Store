@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="StoreDB" Class="StoreDBDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\StoreDB.mdf;Integrated Security=True;Connect Timeout=30" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="StoreDBConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.COUNTRY" Member="COUNTRies">
+    <Type Name="COUNTRY">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="country_code" Type="System.String" DbType="NChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="country_name" Type="System.String" DbType="NChar(90) NOT NULL" CanBeNull="false" />
+      <Association Name="COUNTRY_ORDER" Member="ORDERs" ThisKey="Id" OtherKey="country_id" Type="ORDER" />
+    </Type>
+  </Table>
+  <Table Name="dbo.IMAGE" Member="IMAGEs">
+    <Type Name="IMAGE">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="product_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="description" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="path" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Association Name="PRODUCT_IMAGE" Member="PRODUCT" ThisKey="product_id" OtherKey="Id" Type="PRODUCT" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.[ORDER]" Member="ORDERs">
+    <Type Name="ORDER">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="first_name" Type="System.String" DbType="NChar(60) NOT NULL" CanBeNull="false" />
+      <Column Name="last_name" Type="System.String" DbType="NChar(60) NOT NULL" CanBeNull="false" />
+      <Column Name="street_address" Type="System.String" DbType="NChar(90) NOT NULL" CanBeNull="false" />
+      <Column Name="city" Type="System.String" DbType="NChar(90) NOT NULL" CanBeNull="false" />
+      <Column Name="province" Type="System.String" DbType="NChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="postal_code" Type="System.String" DbType="NChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="status" Type="System.String" DbType="NChar(10)" CanBeNull="true" />
+      <Column Name="country_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="ORDER_ORDER_DETAIL" Member="ORDER_DETAILs" ThisKey="Id" OtherKey="order_id" Type="ORDER_DETAIL" />
+      <Association Name="COUNTRY_ORDER" Member="COUNTRY" ThisKey="country_id" OtherKey="Id" Type="COUNTRY" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ORDER_DETAIL" Member="ORDER_DETAILs">
+    <Type Name="ORDER_DETAIL">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="order_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="product_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="price" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Association Name="ORDER_ORDER_DETAIL" Member="ORDER" ThisKey="order_id" OtherKey="Id" Type="ORDER" IsForeignKey="true" />
+      <Association Name="PRODUCT_ORDER_DETAIL" Member="PRODUCT" ThisKey="product_id" OtherKey="Id" Type="PRODUCT" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.PRODUCT" Member="PRODUCTs">
+    <Type Name="PRODUCT">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="item" Type="System.String" DbType="NChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="description" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="specification" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="price" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="handling_charge" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="shipping_details" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="feature_picture" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Association Name="PRODUCT_IMAGE" Member="IMAGEs" ThisKey="Id" OtherKey="product_id" Type="IMAGE" />
+      <Association Name="PRODUCT_ORDER_DETAIL" Member="ORDER_DETAILs" ThisKey="Id" OtherKey="product_id" Type="ORDER_DETAIL" />
+    </Type>
+  </Table>
+</Database>
