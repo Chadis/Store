@@ -1,0 +1,87 @@
+﻿@model The_Store.PRODUCT
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Product Details</h2>
+
+<div>
+    <h4>PRODUCT</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Product name
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.item)
+        </dd>
+
+        <dt>
+            Description
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.description)
+        </dd>
+
+        <dt>
+            Specification
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.specification)
+        </dd>
+
+        <dt>
+            Price
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.price)
+        </dd>
+
+        <dt>
+            Handling Charge
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.handling_charge)
+        </dd>
+
+        <dt>
+            Shipping Details
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.shipping_details)
+        </dd>
+
+        <dt>
+            Quantity
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.quantity)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+@{
+
+    foreach (IMAGE pic in ViewBag.pictures)
+    {
+        <div>
+
+            <img src="/Images/@pic.path" height="300" width="300"/>
+            <p>@pic.description</p>
+            <a href="/Home/DeletePicture/@pic.Id">delete</a>
+        </div>
+    }
+
+}

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
+using System.Web.Helpers;
 
 namespace The_Store.Controllers
 {
@@ -13,15 +14,34 @@ namespace The_Store.Controllers
         // GET: Admin
         public ActionResult Index(string searchString)
         {
-            var prod = from x in st.PRODUCTs
-                       select x;
-
+            //var prod = from x in st.PRODUCTs
+            //         select x;
+            IEnumerable<PRODUCT> prod;
+            
             if (!String.IsNullOrEmpty(searchString))
             {
-                prod = prod.Where(a => a.item.Contains(searchString));
+                prod = st.PRODUCTs.Where(a => a.item.Contains(searchString));
+            }
+            else
+            {
+                prod = st.PRODUCTs;
             }
 
+            
             return View(prod);
+        }
+
+        public ActionResult OrderList(string searchString)
+        {
+            var order = from x in st.ORDERs
+                        select x;
+
+            return View(order);
+        }
+
+        public void featPic()
+        {
+            
         }
 
         // GET: Admin/Details/5
@@ -127,17 +147,27 @@ namespace The_Store.Controllers
                         where x.Id == id
                         select x).FirstOrDefault();
 
+            var img = from x in st.IMAGEs
+                      where x.product_id == prod.Id
+                      select x;
+            
             try
             {
-                // TODO: Add delete logic here
-                st.PRODUCTs.DeleteOnSubmit(prod);
-                st.IMAGEs.DeleteAllOnSubmit(prod.IMAGEs);
-                st.SubmitChanges();
-
-                foreach (IMAGE pic in prod.IMAGEs)
+                if(prod.feature_picture != null)
                 {
+                    prod.feature_picture = null;
+                    st.SubmitChanges();
+                }
+
+                foreach(IMAGE pic in img)
+                {
+                    st.IMAGEs.DeleteOnSubmit(pic);
                     deletePicFile(pic);
                 }
+                // TODO: Add delete logic here
+                st.SubmitChanges();
+                st.PRODUCTs.DeleteOnSubmit(prod);
+                st.SubmitChanges();
 
                 return RedirectToAction("Index");
             }
@@ -175,6 +205,8 @@ namespace The_Store.Controllers
                     var path = Path.Combine(Server.MapPath("~/Images/"), fileName);
                     file.SaveAs(path);
 
+                    PRODUCT newfeatPic = new PRODUCT();
+//                    newfeatPic.feature_picture = path;
 
                     IMAGE newPic = new IMAGE();
                     newPic.path = fileName;
@@ -215,6 +247,10 @@ namespace The_Store.Controllers
                                  where p.Id == id
                                  select p).FirstOrDefault();
 
+                var prod = from x in st.PRODUCTs
+                           where x.Id == picture.Id
+                           select x;
+
                 st.IMAGEs.DeleteOnSubmit(picture);
                 st.SubmitChanges();
 
@@ -226,6 +262,88 @@ namespace The_Store.Controllers
             {
                 return View();
             }
+        }
+
+        //LOGIN
+
+        [HttpGet]
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Login (FormCollection collection)
+        {
+            string user_name = collection["user_name"];
+            string password = collection["password_hash"];
+
+            string hash = (from h in st.USERs
+                           where h.user_name == user_name
+                           select h.password_hash).SingleOrDefault();
+
+            if(Crypto.VerifyHashedPassword(hash, password))
+            {
+                Session["user"] = user_name;
+            }
+
+            return RedirectToAction("Index", "Admin");
+        }
+
+        public ActionResult ConfirmLogin()
+        {
+            string user_name = (string)Session["user"];
+
+            var user = (from u in st.USERs
+                        where u.user_name == user_name
+                        select u).SingleOrDefault();
+
+            if(user != null)
+            {
+                return View(user);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Admin");
+            }
+        }
+
+        public ActionResult LogOut()
+        {
+            Session["user"] = null;
+            return RedirectToAction("Index", "Admin");
+        }
+        [HttpGet]
+        public ActionResult Register()
+        {
+            List<SelectListItem> listItems = new List<SelectListItem>();
+
+            var items = from c in st.COUNTRies
+                        select c;
+
+            foreach (COUNTRY item in items)
+            {
+                listItems.Add(new SelectListItem() { Text = item.country_name, Value = item.Id.ToString() });
+            }
+            ViewBag.country = listItems;
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Register(FormCollection collection)
+        {
+            USER newUser = new USER();
+            newUser.user_name = collection["user_name"];
+            newUser.password_hash = Crypto.HashPassword(collection["password_hash"]);
+            newUser.country_id = int.Parse(collection["country_id"]);
+            newUser.first_name = collection["first_name"];
+            newUser.last_name = collection["last_name"];
+
+            st.USERs.InsertOnSubmit(newUser);
+            st.SubmitChanges();
+
+            return RedirectToAction("Index", "Admin");
         }
     }
 }

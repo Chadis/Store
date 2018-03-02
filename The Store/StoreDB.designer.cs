@@ -45,6 +45,9 @@ namespace The_Store
     partial void InsertPRODUCT(PRODUCT instance);
     partial void UpdatePRODUCT(PRODUCT instance);
     partial void DeletePRODUCT(PRODUCT instance);
+    partial void InsertUSER(USER instance);
+    partial void UpdateUSER(USER instance);
+    partial void DeleteUSER(USER instance);
     #endregion
 		
 		public StoreDBDataContext() : 
@@ -116,6 +119,14 @@ namespace The_Store
 				return this.GetTable<PRODUCT>();
 			}
 		}
+		
+		public System.Data.Linq.Table<USER> USERs
+		{
+			get
+			{
+				return this.GetTable<USER>();
+			}
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.COUNTRY")]
@@ -132,6 +143,8 @@ namespace The_Store
 		
 		private EntitySet<ORDER> _ORDERs;
 		
+		private EntitySet<USER> _USERs;
+		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -147,6 +160,7 @@ namespace The_Store
 		public COUNTRY()
 		{
 			this._ORDERs = new EntitySet<ORDER>(new Action<ORDER>(this.attach_ORDERs), new Action<ORDER>(this.detach_ORDERs));
+			this._USERs = new EntitySet<USER>(new Action<USER>(this.attach_USERs), new Action<USER>(this.detach_USERs));
 			OnCreated();
 		}
 		
@@ -223,6 +237,19 @@ namespace The_Store
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="COUNTRY_USER", Storage="_USERs", ThisKey="Id", OtherKey="country_id")]
+		public EntitySet<USER> USERs
+		{
+			get
+			{
+				return this._USERs;
+			}
+			set
+			{
+				this._USERs.Assign(value);
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -254,6 +281,18 @@ namespace The_Store
 			this.SendPropertyChanging();
 			entity.COUNTRY = null;
 		}
+		
+		private void attach_USERs(USER entity)
+		{
+			this.SendPropertyChanging();
+			entity.COUNTRY = this;
+		}
+		
+		private void detach_USERs(USER entity)
+		{
+			this.SendPropertyChanging();
+			entity.COUNTRY = null;
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.IMAGE")]
@@ -269,6 +308,8 @@ namespace The_Store
 		private string _description;
 		
 		private string _path;
+		
+		private EntitySet<PRODUCT> _PRODUCTs;
 		
 		private EntityRef<PRODUCT> _PRODUCT;
 		
@@ -288,6 +329,7 @@ namespace The_Store
 		
 		public IMAGE()
 		{
+			this._PRODUCTs = new EntitySet<PRODUCT>(new Action<PRODUCT>(this.attach_PRODUCTs), new Action<PRODUCT>(this.detach_PRODUCTs));
 			this._PRODUCT = default(EntityRef<PRODUCT>);
 			OnCreated();
 		}
@@ -376,6 +418,19 @@ namespace The_Store
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="IMAGE_PRODUCT", Storage="_PRODUCTs", ThisKey="Id", OtherKey="feature_picture")]
+		public EntitySet<PRODUCT> PRODUCTs
+		{
+			get
+			{
+				return this._PRODUCTs;
+			}
+			set
+			{
+				this._PRODUCTs.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PRODUCT_IMAGE", Storage="_PRODUCT", ThisKey="product_id", OtherKey="Id", IsForeignKey=true)]
 		public PRODUCT PRODUCT
 		{
@@ -428,6 +483,18 @@ namespace The_Store
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+		
+		private void attach_PRODUCTs(PRODUCT entity)
+		{
+			this.SendPropertyChanging();
+			entity.IMAGE = this;
+		}
+		
+		private void detach_PRODUCTs(PRODUCT entity)
+		{
+			this.SendPropertyChanging();
+			entity.IMAGE = null;
 		}
 	}
 	
@@ -1016,11 +1083,13 @@ namespace The_Store
 		
 		private int _quantity;
 		
-		private string _feature_picture;
+		private System.Nullable<int> _feature_picture;
 		
 		private EntitySet<IMAGE> _IMAGEs;
 		
 		private EntitySet<ORDER_DETAIL> _ORDER_DETAILs;
+		
+		private EntityRef<IMAGE> _IMAGE;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -1042,7 +1111,7 @@ namespace The_Store
     partial void Onshipping_detailsChanged();
     partial void OnquantityChanging(int value);
     partial void OnquantityChanged();
-    partial void Onfeature_pictureChanging(string value);
+    partial void Onfeature_pictureChanging(System.Nullable<int> value);
     partial void Onfeature_pictureChanged();
     #endregion
 		
@@ -1050,6 +1119,7 @@ namespace The_Store
 		{
 			this._IMAGEs = new EntitySet<IMAGE>(new Action<IMAGE>(this.attach_IMAGEs), new Action<IMAGE>(this.detach_IMAGEs));
 			this._ORDER_DETAILs = new EntitySet<ORDER_DETAIL>(new Action<ORDER_DETAIL>(this.attach_ORDER_DETAILs), new Action<ORDER_DETAIL>(this.detach_ORDER_DETAILs));
+			this._IMAGE = default(EntityRef<IMAGE>);
 			OnCreated();
 		}
 		
@@ -1213,8 +1283,8 @@ namespace The_Store
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_feature_picture", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
-		public string feature_picture
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_feature_picture", DbType="Int")]
+		public System.Nullable<int> feature_picture
 		{
 			get
 			{
@@ -1224,6 +1294,10 @@ namespace The_Store
 			{
 				if ((this._feature_picture != value))
 				{
+					if (this._IMAGE.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
 					this.Onfeature_pictureChanging(value);
 					this.SendPropertyChanging();
 					this._feature_picture = value;
@@ -1256,6 +1330,40 @@ namespace The_Store
 			set
 			{
 				this._ORDER_DETAILs.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="IMAGE_PRODUCT", Storage="_IMAGE", ThisKey="feature_picture", OtherKey="Id", IsForeignKey=true)]
+		public IMAGE IMAGE
+		{
+			get
+			{
+				return this._IMAGE.Entity;
+			}
+			set
+			{
+				IMAGE previousValue = this._IMAGE.Entity;
+				if (((previousValue != value) 
+							|| (this._IMAGE.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._IMAGE.Entity = null;
+						previousValue.PRODUCTs.Remove(this);
+					}
+					this._IMAGE.Entity = value;
+					if ((value != null))
+					{
+						value.PRODUCTs.Add(this);
+						this._feature_picture = value.Id;
+					}
+					else
+					{
+						this._feature_picture = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("IMAGE");
+				}
 			}
 		}
 		
@@ -1301,6 +1409,229 @@ namespace The_Store
 		{
 			this.SendPropertyChanging();
 			entity.PRODUCT = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.[USER]")]
+	public partial class USER : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _Id;
+		
+		private string _user_name;
+		
+		private string _password_hash;
+		
+		private int _country_id;
+		
+		private string _first_name;
+		
+		private string _last_name;
+		
+		private EntityRef<COUNTRY> _COUNTRY;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdChanging(int value);
+    partial void OnIdChanged();
+    partial void Onuser_nameChanging(string value);
+    partial void Onuser_nameChanged();
+    partial void Onpassword_hashChanging(string value);
+    partial void Onpassword_hashChanged();
+    partial void Oncountry_idChanging(int value);
+    partial void Oncountry_idChanged();
+    partial void Onfirst_nameChanging(string value);
+    partial void Onfirst_nameChanged();
+    partial void Onlast_nameChanging(string value);
+    partial void Onlast_nameChanged();
+    #endregion
+		
+		public USER()
+		{
+			this._COUNTRY = default(EntityRef<COUNTRY>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this.OnIdChanging(value);
+					this.SendPropertyChanging();
+					this._Id = value;
+					this.SendPropertyChanged("Id");
+					this.OnIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_name", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
+		public string user_name
+		{
+			get
+			{
+				return this._user_name;
+			}
+			set
+			{
+				if ((this._user_name != value))
+				{
+					this.Onuser_nameChanging(value);
+					this.SendPropertyChanging();
+					this._user_name = value;
+					this.SendPropertyChanged("user_name");
+					this.Onuser_nameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password_hash", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
+		public string password_hash
+		{
+			get
+			{
+				return this._password_hash;
+			}
+			set
+			{
+				if ((this._password_hash != value))
+				{
+					this.Onpassword_hashChanging(value);
+					this.SendPropertyChanging();
+					this._password_hash = value;
+					this.SendPropertyChanged("password_hash");
+					this.Onpassword_hashChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_country_id", DbType="Int NOT NULL")]
+		public int country_id
+		{
+			get
+			{
+				return this._country_id;
+			}
+			set
+			{
+				if ((this._country_id != value))
+				{
+					if (this._COUNTRY.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Oncountry_idChanging(value);
+					this.SendPropertyChanging();
+					this._country_id = value;
+					this.SendPropertyChanged("country_id");
+					this.Oncountry_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_first_name", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
+		public string first_name
+		{
+			get
+			{
+				return this._first_name;
+			}
+			set
+			{
+				if ((this._first_name != value))
+				{
+					this.Onfirst_nameChanging(value);
+					this.SendPropertyChanging();
+					this._first_name = value;
+					this.SendPropertyChanged("first_name");
+					this.Onfirst_nameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_last_name", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
+		public string last_name
+		{
+			get
+			{
+				return this._last_name;
+			}
+			set
+			{
+				if ((this._last_name != value))
+				{
+					this.Onlast_nameChanging(value);
+					this.SendPropertyChanging();
+					this._last_name = value;
+					this.SendPropertyChanged("last_name");
+					this.Onlast_nameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="COUNTRY_USER", Storage="_COUNTRY", ThisKey="country_id", OtherKey="Id", IsForeignKey=true)]
+		public COUNTRY COUNTRY
+		{
+			get
+			{
+				return this._COUNTRY.Entity;
+			}
+			set
+			{
+				COUNTRY previousValue = this._COUNTRY.Entity;
+				if (((previousValue != value) 
+							|| (this._COUNTRY.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._COUNTRY.Entity = null;
+						previousValue.USERs.Remove(this);
+					}
+					this._COUNTRY.Entity = value;
+					if ((value != null))
+					{
+						value.USERs.Add(this);
+						this._country_id = value.Id;
+					}
+					else
+					{
+						this._country_id = default(int);
+					}
+					this.SendPropertyChanged("COUNTRY");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
 		}
 	}
 }

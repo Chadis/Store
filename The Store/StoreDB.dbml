@@ -6,6 +6,7 @@
       <Column Name="country_code" Type="System.String" DbType="NChar(10) NOT NULL" CanBeNull="false" />
       <Column Name="country_name" Type="System.String" DbType="NChar(90) NOT NULL" CanBeNull="false" />
       <Association Name="COUNTRY_ORDER" Member="ORDERs" ThisKey="Id" OtherKey="country_id" Type="ORDER" />
+      <Association Name="COUNTRY_USER" Member="USERs" ThisKey="Id" OtherKey="country_id" Type="USER" />
     </Type>
   </Table>
   <Table Name="dbo.IMAGE" Member="IMAGEs">
@@ -14,6 +15,7 @@
       <Column Name="product_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="description" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
       <Column Name="path" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Association Name="IMAGE_PRODUCT" Member="PRODUCTs" ThisKey="Id" OtherKey="feature_picture" Type="PRODUCT" />
       <Association Name="PRODUCT_IMAGE" Member="PRODUCT" ThisKey="product_id" OtherKey="Id" Type="PRODUCT" IsForeignKey="true" />
     </Type>
   </Table>
@@ -53,9 +55,21 @@
       <Column Name="handling_charge" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
       <Column Name="shipping_details" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
       <Column Name="quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="feature_picture" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="feature_picture" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Association Name="PRODUCT_IMAGE" Member="IMAGEs" ThisKey="Id" OtherKey="product_id" Type="IMAGE" />
       <Association Name="PRODUCT_ORDER_DETAIL" Member="ORDER_DETAILs" ThisKey="Id" OtherKey="product_id" Type="ORDER_DETAIL" />
+      <Association Name="IMAGE_PRODUCT" Member="IMAGE" ThisKey="feature_picture" OtherKey="Id" Type="IMAGE" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.[USER]" Member="USERs">
+    <Type Name="USER">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="user_name" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="password_hash" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="country_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="first_name" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="last_name" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Association Name="COUNTRY_USER" Member="COUNTRY" ThisKey="country_id" OtherKey="Id" Type="COUNTRY" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

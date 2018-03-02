@@ -147,6 +147,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\ClientController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -177,6 +178,11 @@
     <Content Include="Views\Admin\Delete.cshtml" />
     <Content Include="Views\Admin\Details.cshtml" />
     <Content Include="Views\Admin\AddPictures.cshtml" />
+    <Content Include="Views\Client\Index.cshtml" />
+    <Content Include="Views\Client\Details.cshtml" />
+    <Content Include="Views\Client\ViewCart.cshtml" />
+    <Content Include="Views\Admin\OrderList.cshtml" />
+    <Content Include="Views\Client\CheckOut.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
